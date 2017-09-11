@@ -1,0 +1,77 @@
+<%= javascript_include_tag '//www.gstatic.com/charts/loader.js' %>
+
+<div id="dashboard">
+  <div id="control"></div>
+  <div id="timeline" style="height: 90%;">
+  </div>
+</div>
+
+<script type="text/javascript">
+google.charts.load('current', {'packages':['timeline','controls']});
+google.charts.setOnLoadCallback(drawChart);
+function drawChart() {
+  var container = document.getElementById('timeline');
+  var chart = new google.visualization.Timeline(container);
+  var dataTable = new google.visualization.DataTable();
+
+  dataTable.addColumn({ type: 'string', id: 'Player' });
+  dataTable.addColumn({ type: 'date', id: 'Login' });
+  dataTable.addColumn({ type: 'date', id: 'Logout' });
+  dataTable.addRows([
+    <%= @timeline.html_safe %>
+  ]);
+
+  var dashboard = new google.visualization.Dashboard(
+      document.getElementById('dashboard'));
+
+  var control = new google.visualization.ControlWrapper({
+    controlType: 'ChartRangeFilter',
+    containerId: 'control',
+    options: {
+      // Filter by the date axis.
+      filterColumnIndex: 1,
+      ui: {
+        chartType: 'LineChart',
+        chartOptions: {
+          height: 70,
+          hAxis: {
+            format: 'yyyy-MM-dd hh:mm',
+            ticks: <%= @ticks.html_safe %>
+          }
+        },
+        chartView: {
+          columns: [1, {
+            type: 'number',
+            calc: function () {return 0;}
+          }]
+        }
+      }
+    }
+  });
+
+
+  var chart = new google.visualization.ChartWrapper({
+    'chartType': 'Timeline',
+    'containerId': 'timeline',
+    'options': {
+      'chartArea': {
+        width: '80%', // make sure this is the same for the chart and control so the axes align right
+        height: '80%',
+        hAxis: {
+          format: 'yyyy-MM-dd hh:mm',
+          gridlines: {count: 15}
+        }
+      },
+      'backgroundColor': '#ffd'
+    },
+    'view': {
+      'columns': [0, 1, 2]
+    }
+
+  });
+
+  dashboard.bind(control, chart);
+
+  dashboard.draw(dataTable);
+}
+</script>

@@ -1,0 +1,2 @@
+redmine plugin that show a chart with data collected from rust server
+to collect data I'm using rustsdb.py from https://github.com/oleerik/steamscript

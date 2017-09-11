@@ -1,0 +1,1 @@
+get 'rust' => 'rust#index'
