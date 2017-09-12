@@ -8,7 +8,9 @@ class RustController < ApplicationController
     @timeline = Player.all.collect {|player|
       [player.name, player.login.to_s, player.logout.to_s || Time.now.to_s]
     }
-    @timeline = @timeline.collect {|entry| "[\"#{entry[0]}\", new Date(\"#{entry[1].gsub(/ UTC/,'Z')}\"), new Date(\"#{entry[2].gsub(/ UTC/,'Z')}\")]" }.join(",\n")
+    @timeline = @timeline.sort {|a,b| a[0].casecmp(b[0]) }.collect { |entry|
+      "[\"#{entry[0]}\", new Date(\"#{entry[1].gsub(/ UTC/,'Z')}\"), new Date(\"#{entry[2].gsub(/ UTC/,'Z')}\")]"
+    }.join(",\n")
     start_tick = Player.first.login
     end_tick   = Player.last.last_seen
     diff_ticks = (end_tick - start_tick).to_i / 8.0
