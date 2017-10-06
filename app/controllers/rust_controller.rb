@@ -6,7 +6,7 @@ class RustController < ApplicationController
   def index
     @timeline = []
     @timeline = Player.all.collect {|player|
-      [player.name, player.login.to_s, player.logout.to_s || Time.now.to_s]
+      [player.name, player.login.to_s, player.last_seen.to_s || Time.now.to_s]
     }
     @timeline = @timeline.sort {|a,b| a[0].casecmp(b[0]) }.collect { |entry|
       "[\"#{entry[0]}\", new Date(\"#{entry[1].gsub(/ UTC/,'Z')}\"), new Date(\"#{entry[2].gsub(/ UTC/,'Z')}\")]"
