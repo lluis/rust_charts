@@ -24,7 +24,7 @@ class RustController < ApplicationController
     }.join(",\n")
     @ticks = "["
     from = Time.parse(wipe[:from]).beginning_of_day
-    while from < wipe[:to] do
+    while from < wipe[:to] and from < Time.now do
       @ticks += "new Date(#{from.to_f * 1000}),"
       from += 1.day
     end
