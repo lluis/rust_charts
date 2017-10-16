@@ -6,7 +6,7 @@ class RustController < ApplicationController
   def index
     @timeline = Player.where(nil)
     if params[:player]
-      @timeline = @timeline.where("name like ?", "%#{params[:player]}%")
+      @timeline = @timeline.where("name ilike ?", "%#{params[:player]}%")
     end
     wipes = [
       { from: '2017-09-07 18:00:00', to: '2017-10-05 18:00:00' },
