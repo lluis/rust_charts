@@ -5,27 +5,28 @@ class RustController < ApplicationController
 
   def index
     @timeline = Player.where(nil)
-    case params[:wipe]
-    when '0'
-      @timeline = @timeline.where("login < '2017-10-05 18:00:00' or last_seen < '2017-10-05 18:00:00'")
-    else
-      @timeline = @timeline.where("login >= '2017-10-05 18:00:00' or last_seen >= '2017-10-05 18:00:00'")
+    if params[:player]
+      @timeline = @timeline.where("name like ?", "%#{params[:player]}%")
     end
-    @timeline = @timeline.all
-    start_tick = @timeline.first.login
-    end_tick   = @timeline.last.last_seen
+    wipes = [
+      { from: '2017-09-07 18:00:00', to: '2017-10-05 18:00:00' },
+      { from: '2017-10-05 18:00:00', to: '2017-11-02 18:00:00' }
+    ]
+    wipe = (wipes[params[:wipe].to_i] if params[:wipe].present?) rescue nil
+    wipe ||= wipes.last
 
+    @timeline = @timeline.where(login: (wipe[:from])..(wipe[:to]))
     @timeline = @timeline.collect {|player|
       [player.name, player.login.to_s, player.last_seen.to_s || Time.now.to_s]
     }
     @timeline = @timeline.sort {|a,b| a[0].casecmp(b[0]) }.collect { |entry|
       "[\"#{entry[0]}\", new Date(\"#{entry[1].gsub(/ UTC/,'Z')}\"), new Date(\"#{entry[2].gsub(/ UTC/,'Z')}\")]"
     }.join(",\n")
-    diff_ticks = (end_tick - start_tick).to_i / 8.0
     @ticks = "["
-    8.times do
-      @ticks += "new Date(\"#{start_tick.to_s.gsub(/ UTC/,'Z')}\"),"
-      start_tick += diff_ticks
+    from = Time.parse(wipe[:from]).beginning_of_day
+    while from < wipe[:to] do
+      @ticks += "new Date(#{from.to_f * 1000}),"
+      from += 1.day
     end
     @ticks.gsub!(/,\Z/,'')
     @ticks += "]"
