@@ -10,7 +10,8 @@ class RustController < ApplicationController
     end
     wipes = [
       { from: '2017-09-07 18:00:00', to: '2017-10-05 18:00:00' },
-      { from: '2017-10-05 18:00:00', to: '2017-11-02 18:00:00' }
+      { from: '2017-10-05 18:00:00', to: '2017-11-02 22:13:00' },
+      { from: '2017-10-05 22:13:00', to: '2017-12-07 18:00:00' }
     ]
     wipe = (wipes[params[:wipe].to_i] if params[:wipe].present?) rescue nil
     wipe ||= wipes.last
